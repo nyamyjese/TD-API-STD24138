@@ -1,0 +1,156 @@
+openapi: "3.0.3"
+info:
+  title: Task Management API
+  version: "1.0"
+servers:
+  - url: http://localhost:8000
+
+paths:
+  /tasks:
+    get:
+      summary: Return a list of tasks
+      operationId: getTasks
+      responses:
+        "200":
+          description: List of tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+
+    post:
+      summary: Create a list of new tasks
+      operationId: createTasks
+      requestBody:
+        required: true
+        description: List of tasks to create
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/TaskInput"
+      responses:
+        "201":
+          description: Tasks created successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+
+    delete:
+      summary: Delete a list of tasks by ID
+      operationId: deleteTasks
+      requestBody:
+        required: true
+        description: List of task IDs to delete
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: integer
+                example: 1
+      responses:
+        "200":
+          description: Deleted tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Task"
+
+  /tasks/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+        description: ID of the task
+
+    get:
+      summary: Get a specific task by ID
+      operationId: getTaskById
+      responses:
+        "200":
+          description: Task found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                example:
+                  error: Task not found
+
+    delete:
+      summary: Delete a specific task by ID
+      operationId: deleteTaskById
+      responses:
+        "200":
+          description: Task deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Task"
+        "404":
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                example:
+                  error: Task not found
+
+components:
+  schemas:
+    Task:
+      type: object
+      description: A task object with ID
+      properties:
+        id:
+          type: integer
+          description: Unique identifier of the task
+        title:
+          type: string
+          description: Title or name of the task
+        completed:
+          type: boolean
+          description: Status of the task (true if done)
+      required: [id, title, completed]
+      example:
+        id: 1
+        title: "Do grocery shopping"
+        completed: false
+
+    TaskInput:
+      type: object
+      description: Task object for creation (without ID)
+      properties:
+        title:
+          type: string
+          description: Title of the task
+        completed:
+          type: boolean
+          description: Status of the task (default false)
+          default: false
+      required: [title]
+      example:
+        title: "Do laundry"
+        completed: false
